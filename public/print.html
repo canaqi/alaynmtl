@@ -49,7 +49,7 @@
       line-height: 1.35;
     }
     th .ar { display: block; font-size: 13px; font-weight: 600; }
-    td { border: 1px solid #9db8bf; height: 44px; padding: 2px 6px; font-size: 14px; }
+    td { border: 1px solid #9db8bf; height: 50px; padding: 2px 6px; font-size: 14px; }
     td.num { text-align: center; color: #888; font-size: 12px; width: 30px; }
     col.c-first { width: 17%; } col.c-last { width: 15%; }
     col.c-phone { width: 20%; } col.c-email { width: 24%; }
@@ -66,7 +66,7 @@
       .print-btn { display: none; }
       body { padding: 0; }
     }
-    @page { size: A4 portrait; margin: 12mm; }
+    @page { size: A4 landscape; margin: 10mm; }
   </style>
 </head>
 <body>
@@ -115,7 +115,7 @@
 
   <script>
     const tbody = document.getElementById('rows');
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 9; i++) {
       tbody.insertAdjacentHTML('beforeend',
         `<tr><td class="num">${i}</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`);
     }
