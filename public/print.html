@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sadaqa Box Sign-up Sheet — Al Ayn Foundation</title>
+  <style>
+    :root { --teal: #1a8ca4; --gold: #eac42a; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Naskh Arabic", Roboto, sans-serif;
+      color: #1c2a2e;
+      margin: 0;
+      padding: 24px 32px;
+    }
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 4px solid var(--teal);
+      padding-bottom: 12px;
+      margin-bottom: 6px;
+    }
+    .sheet-head img { width: 64px; height: 64px; object-fit: contain; }
+    .sheet-head h1 { margin: 0; font-size: 22px; color: var(--teal); }
+    .sheet-head .ar { font-size: 18px; margin-top: 2px; }
+    .sheet-head p { margin: 2px 0 0; font-size: 13px; color: #555; }
+    .spacer { flex: 1; }
+    .meta { font-size: 13px; text-align: right; }
+    .meta .line { border-bottom: 1px solid #999; min-width: 160px; display: inline-block; }
+    .instructions {
+      background: #f2f8fa;
+      border: 1px solid #cfe4ea;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      margin: 10px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .instructions .ar { direction: rtl; text-align: right; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th {
+      background: var(--teal);
+      color: #fff;
+      font-size: 12.5px;
+      padding: 6px 6px;
+      border: 1px solid #12717f;
+      line-height: 1.35;
+    }
+    th .ar { display: block; font-size: 13px; font-weight: 600; }
+    td { border: 1px solid #9db8bf; height: 44px; padding: 2px 6px; font-size: 14px; }
+    td.num { text-align: center; color: #888; font-size: 12px; width: 30px; }
+    col.c-first { width: 17%; } col.c-last { width: 15%; }
+    col.c-phone { width: 20%; } col.c-email { width: 24%; }
+    col.c-box { width: 10%; } col.c-lock { width: 10%; }
+    tr:nth-child(even) td { background: #fbf7e6; }
+    .foot { margin-top: 12px; font-size: 12px; color: #666; display: flex; justify-content: space-between; }
+    .print-btn {
+      position: fixed; top: 16px; right: 16px;
+      background: var(--teal); color: #fff; border: none;
+      padding: 10px 20px; font-size: 15px; border-radius: 8px; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    @media print {
+      .print-btn { display: none; }
+      body { padding: 0; }
+    }
+    @page { size: A4 portrait; margin: 12mm; }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">🖨 Print</button>
+
+  <div class="sheet-head">
+    <img src="logo.png" onerror="this.onerror=null; this.src='logo.svg'" alt="Al Ayn" />
+    <div>
+      <h1>Sadaqa Box Sign-up <span class="ar">— تسجيل صندوق الصدقة</span></h1>
+      <p>Al Ayn Social Care Foundation — for the orphans</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="meta">
+      Date / التاريخ: <span class="line"></span><br /><br />
+      Centre / المركز: <span class="line"></span>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <div>Please write clearly, one person per row. Phone number with country code. Last name and email are optional.</div>
+    <div class="ar">يرجى الكتابة بوضوح، سطر واحد لكل شخص. رقم الهاتف مع رمز الدولة. اسم العائلة والبريد الإلكتروني اختياريان.</div>
+  </div>
+
+  <table>
+    <colgroup>
+      <col style="width:30px" /><col class="c-first" /><col class="c-last" /><col class="c-phone" /><col class="c-email" /><col class="c-box" /><col class="c-lock" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>First name<span class="ar">الاسم الأول</span></th>
+        <th>Last name<span class="ar">اسم العائلة</span></th>
+        <th>Phone<span class="ar">رقم الهاتف</span></th>
+        <th>Email<span class="ar">البريد الإلكتروني</span></th>
+        <th>Box #<span class="ar">رقم الصندوق</span></th>
+        <th>Lock #<span class="ar">رقم القفل</span></th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div class="foot">
+    <span>The team fills in the box &amp; lock numbers when handing out the box.</span>
+    <span dir="rtl">يقوم الفريق بتعبئة رقم الصندوق ورقم القفل عند تسليم الصندوق.</span>
+  </div>
+
+  <script>
+    const tbody = document.getElementById('rows');
+    for (let i = 1; i <= 12; i++) {
+      tbody.insertAdjacentHTML('beforeend',
+        `<tr><td class="num">${i}</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`);
+    }
+  </script>
+</body>
+</html>

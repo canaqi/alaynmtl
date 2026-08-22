@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Al Ayn Sadaqa Box Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo.svg" />
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--teal); }
+    .login-card {
+      background: #fff; border-radius: 16px; padding: 32px 34px;
+      width: 100%; max-width: 380px; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      text-align: center; margin: 16px;
+    }
+    .login-card img { width: 72px; height: 72px; margin-bottom: 8px; }
+    .login-card h1 { font-size: 19px; margin: 0 0 2px; }
+    .login-card .sub-title { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+    .login-card input { margin-bottom: 12px; text-align: center; }
+    .login-card .btn { width: 100%; }
+    .login-error { color: var(--red); font-size: 13.5px; min-height: 20px; margin: 8px 0 0; }
+    #setup-hint { font-size: 12.5px; color: var(--muted); margin: 0 0 14px; background: var(--teal-light); border-radius: 8px; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <img src="logo.png" onerror="this.onerror=null; this.src='logo.svg'" alt="Al Ayn" />
+    <h1>Sadaqa Box Tracker</h1>
+    <p class="sub-title">Al Ayn Foundation</p>
+    <p id="setup-hint" hidden>Welcome! No team password exists yet — choose one now (at least 8 characters) and share it only with the team.</p>
+    <form id="form">
+      <input type="password" id="password" placeholder="Team password" autocomplete="current-password" autofocus />
+      <input type="password" id="password2" placeholder="Repeat password" autocomplete="new-password" hidden />
+      <button class="btn primary" id="submit" type="submit">Sign in</button>
+      <p class="login-error" id="error"></p>
+    </form>
+  </div>
+  <script>
+    let setupMode = false;
+    const el = (id) => document.getElementById(id);
+
+    fetch('/api/auth-status').then((r) => r.json()).then((s) => {
+      if (s.authenticated) { location.href = '/'; return; }
+      setupMode = s.setup_required;
+      if (setupMode) {
+        el('setup-hint').hidden = false;
+        el('password2').hidden = false;
+        el('password').placeholder = 'Choose a team password';
+        el('password').autocomplete = 'new-password';
+        el('submit').textContent = 'Create password & sign in';
+      }
+    });
+
+    el('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      el('error').textContent = '';
+      const password = el('password').value;
+      if (setupMode && password !== el('password2').value) {
+        el('error').textContent = 'The two passwords do not match.';
+        return;
+      }
+      const res = await fetch(setupMode ? '/api/setup' : '/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) location.href = '/';
+      else el('error').textContent = data.error || 'Sign-in failed.';
+    });
+  </script>
+</body>
+</html>

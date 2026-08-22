@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Al Ayn — Sadaqa Box Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo.svg" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand-mark" src="logo.png" onerror="this.onerror=null; this.src='logo.svg'" alt="Al Ayn" />
+      <div>
+        <h1>Sadaqa Box Tracker</h1>
+        <p>Al Ayn Foundation</p>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="dashboard" class="active">Dashboard</button>
+      <button data-tab="boxes">Boxes</button>
+      <button data-tab="donors">Donors</button>
+      <button data-tab="locations">Drop Locations</button>
+      <button data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="tab-dashboard" class="tab-page">
+      <div class="stat-row" id="stat-row"></div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>⚠️ Overdue boxes</h2>
+          <span class="hint">These boxes have passed their exchange date</span>
+        </div>
+        <div id="overdue-table"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>🔔 Due soon</h2>
+          <span class="hint" id="due-soon-hint"></span>
+        </div>
+        <div id="due-soon-table"></div>
+      </div>
+    </section>
+
+    <!-- BOXES -->
+    <section id="tab-boxes" class="tab-page" hidden>
+      <div class="toolbar">
+        <input type="search" id="box-search" placeholder="Search name, phone, box or lock number…" />
+        <select id="box-filter">
+          <option value="out">Boxes out</option>
+          <option value="closed">Exchanged / returned</option>
+          <option value="all">All history</option>
+        </select>
+        <a class="btn" href="print.html" target="_blank">🖨 Sign-up sheet</a>
+        <button class="btn" id="btn-scan">📷 Scan sheet</button>
+        <button class="btn primary" id="btn-new-box">+ Give out a box</button>
+      </div>
+      <div class="panel"><div id="boxes-table"></div></div>
+    </section>
+
+    <!-- DONORS -->
+    <section id="tab-donors" class="tab-page" hidden>
+      <div class="toolbar">
+        <input type="search" id="donor-search" placeholder="Search donors by name or phone…" />
+      </div>
+      <div class="panel"><div id="donors-table"></div></div>
+    </section>
+
+    <!-- LOCATIONS -->
+    <section id="tab-locations" class="tab-page" hidden>
+      <div class="toolbar">
+        <span class="hint">Drop-off locations are included in the WhatsApp reminder message.</span>
+        <button class="btn primary" id="btn-new-location">+ Add location</button>
+      </div>
+      <div class="panel"><div id="locations-table"></div></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="tab-page" hidden>
+      <div class="panel narrow">
+        <h2>Reminder message</h2>
+        <p class="hint">This is the WhatsApp message sent to donors. You can write it in any language.<br>
+          Placeholders: <code>{name}</code> <code>{first_name}</code> <code>{box_number}</code> <code>{lock_number}</code> <code>{due_date}</code> <code>{locations}</code></p>
+        <textarea id="set-template" rows="10"></textarea>
+        <h2>Defaults</h2>
+        <div class="form-grid">
+          <label>Exchange cycle (days)<input type="number" id="set-cycle" min="1" /></label>
+          <label>"Due soon" window (days)<input type="number" id="set-due-soon" min="1" /></label>
+        </div>
+        <h2>Paper sheet scanning</h2>
+        <p class="hint">Scanning a handwritten sign-up sheet uses Claude (Anthropic's AI) to read the handwriting.
+          Enter an API key from <strong>console.anthropic.com</strong>. Each scan costs a few cents.</p>
+        <label class="hint">Claude API key<input type="password" id="set-api-key" placeholder="sk-ant-..." autocomplete="off" /></label>
+        <div class="form-actions">
+          <button class="btn primary" id="btn-save-settings">Save settings</button>
+          <span id="settings-saved" class="saved-note" hidden>✓ Saved</span>
+        </div>
+        <h2>Backup &amp; account</h2>
+        <p class="hint">The backup file contains all donors, boxes and history. Save one regularly somewhere safe (e.g. Google Drive).</p>
+        <div class="form-actions">
+          <a class="btn" href="/api/backup">⬇ Download backup</a>
+          <button class="btn danger" id="btn-logout">Log out</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div id="modal-backdrop" class="modal-backdrop" hidden>
+    <div class="modal" id="modal">
+      <div class="modal-head">
+        <h2 id="modal-title"></h2>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

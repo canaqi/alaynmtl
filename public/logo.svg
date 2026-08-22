@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Al Ayn mark (approximation) — replace by adding public/logo.png with the official logo -->
+  <defs>
+    <clipPath id="c"><circle cx="100" cy="112" r="82"/></clipPath>
+  </defs>
+  <circle cx="100" cy="112" r="82" fill="#eac42a"/>
+  <g clip-path="url(#c)">
+    <path d="M18 112a82 82 0 0 1 82-82c14 0 24 3 24 3-30 26-38 60-28 94 8 28 26 46 26 46s-12 21-22 21a82 82 0 0 1-82-82z" fill="#1a8ca4"/>
+  </g>
+  <path d="M96 28c-8 22-6 44 4 66 9 20 24 36 24 36s-20-8-34-26C76 86 72 62 80 40c4-10 16-12 16-12z" fill="#fff"/>
+  <circle cx="72" cy="118" r="15" fill="#1a8ca4"/>
+  <path d="M60 140c14 16 34 24 56 24l-6 14c-24-2-42-14-56-32z" fill="#1a8ca4"/>
+  <g fill="#1a8ca4">
+    <path d="M104 12l5 18 18 5-18 5-5 18-5-18-18-5 18-5z"/>
+    <path d="M134 46l3 11 11 3-11 3-3 11-3-11-11-3 11-3z"/>
+    <path d="M118 88l2.5 9 9 2.5-9 2.5-2.5 9-2.5-9-9-2.5 9-2.5z"/>
+  </g>
+</svg>
