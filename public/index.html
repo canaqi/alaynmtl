@@ -28,6 +28,13 @@
   <main>
     <!-- DASHBOARD -->
     <section id="tab-dashboard" class="tab-page">
+      <div class="panel" id="pending-panel" hidden>
+        <div class="panel-head">
+          <h2>📥 New registrations to approve</h2>
+          <span class="hint">Sent in by donors through the registration link — check and approve</span>
+        </div>
+        <div id="pending-table"></div>
+      </div>
       <div class="stat-row" id="stat-row"></div>
       <div class="panel">
         <div class="panel-head">
@@ -56,6 +63,7 @@
         </select>
         <a class="btn" href="print.html" target="_blank">🖨 Sign-up sheet</a>
         <button class="btn" id="btn-scan">📷 Scan sheet</button>
+        <button class="btn" id="btn-invite">🔗 Registration link</button>
         <button class="btn primary" id="btn-new-box">+ Give out a box</button>
       </div>
       <div class="panel"><div id="boxes-table"></div></div>

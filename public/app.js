@@ -127,7 +127,8 @@ function refreshCurrentTab() {
 
 // ---------- dashboard ----------
 async function loadDashboard() {
-  const d = await api('/api/dashboard');
+  const [d, pending] = await Promise.all([api('/api/dashboard'), api('/api/pending')]);
+  renderPending(pending);
   const s = d.stats;
   document.getElementById('stat-row').innerHTML = `
     <div class="stat-card"><div class="num">${s.boxes_out}</div><div class="label">Boxes out with donors</div></div>
@@ -138,6 +139,40 @@ async function loadDashboard() {
   document.getElementById('due-soon-hint').textContent = `Boxes due within ${s.due_soon_days} days`;
   document.getElementById('overdue-table').innerHTML = assignmentTable(d.overdue, 'No overdue boxes. 🎉');
   document.getElementById('due-soon-table').innerHTML = assignmentTable(d.due_soon, 'Nothing due soon.');
+}
+
+function renderPending(rows) {
+  const panel = document.getElementById('pending-panel');
+  panel.hidden = !rows.length;
+  if (!rows.length) return;
+  document.getElementById('pending-table').innerHTML = `<table><thead><tr>
+      <th>Name</th><th>Phone</th><th>Email</th><th>Box #</th><th>Lock #</th><th>Sent</th><th></th>
+    </tr></thead><tbody>` +
+    rows.map((p) => `<tr>
+      <td dir="auto"><strong>${esc(fullName(p))}</strong></td>
+      <td>${esc(p.phone)}</td>
+      <td>${esc(p.email) || '—'}</td>
+      <td>${esc(p.box_number)}</td>
+      <td>${esc(p.lock_number)}</td>
+      <td class="sub">${fmtDate(p.created_at.slice(0, 10))}</td>
+      <td><div class="row-actions">
+        <button class="btn small primary" onclick='approvePending(${JSON.stringify(p)})'>Approve</button>
+        <button class="btn small danger" onclick="rejectPending(${p.id})">Reject</button>
+      </div></td>
+    </tr>`).join('') + '</tbody></table>';
+}
+
+function approvePending(p) {
+  openNewAssignment({
+    first_name: p.first_name, last_name: p.last_name, phone: p.phone, email: p.email,
+    box_number: p.box_number, lock_number: p.lock_number, pending_id: p.id,
+  });
+}
+
+async function rejectPending(id) {
+  if (!confirm('Reject and delete this registration?')) return;
+  await api(`/api/pending/${id}`, { method: 'DELETE' });
+  loadDashboard();
 }
 
 function remindedNote(a) {
@@ -211,8 +246,8 @@ function openNewAssignment(prefillDonor) {
       <label class="full">Phone (with country code, e.g. +964…)<input id="f-phone" value="${esc(prefillDonor?.phone || '')}" placeholder="+964 770 000 0000" />
         <div id="donor-match"></div></label>
       <label class="full">Email (optional)<input id="f-email" type="email" value="${esc(prefillDonor?.email || '')}" /></label>
-      <label>Box number<input id="f-box" /></label>
-      <label>Lock number<input id="f-lock" /></label>
+      <label>Box number<input id="f-box" value="${esc(prefillDonor?.box_number || '')}" /></label>
+      <label>Lock number<input id="f-lock" value="${esc(prefillDonor?.lock_number || '')}" /></label>
       <label>Date given<input type="date" id="f-given" value="${given}" /></label>
       <label>Due for exchange<input type="date" id="f-due" value="${due}" /></label>
       <label class="full">Notes (optional)<input id="f-notes" /></label>
@@ -244,6 +279,9 @@ function openNewAssignment(prefillDonor) {
         box_number: val('f-box'), lock_number: val('f-lock'),
         date_given: val('f-given'), due_date: val('f-due'), notes: val('f-notes'),
       }});
+      if (prefillDonor?.pending_id) {
+        await api(`/api/pending/${prefillDonor.pending_id}`, { method: 'DELETE' });
+      }
       closeModal();
       toast('Box registered ✓');
       refreshCurrentTab();
@@ -402,6 +440,51 @@ async function openEditDonor(id) {
       }});
       closeModal(); toast('Donor updated ✓'); loadDonors();
     } catch (err) { toast(err.message, true); }
+  };
+}
+
+// ---------- registration invite link ----------
+document.getElementById('btn-invite').onclick = openInviteModal;
+
+function registrationLink() {
+  return `${location.origin}/register.html?t=${settings.register_token || ''}`;
+}
+
+function openInviteModal() {
+  const link = registrationLink();
+  const waText = encodeURIComponent(
+    `Assalamu Alaikum! Please register your Al Ayn Sadaqa box here:\n${link}\n\nالسلام عليكم! يرجى تسجيل صندوق الصدقة الخاص بكم هنا 🤲`
+  );
+  openModal('Registration link', `
+    <p class="hint">Send this link to someone who received a box. They fill in their own details
+      (name, phone, box &amp; lock numbers) and the submission appears on the Dashboard for approval.</p>
+    <input id="invite-link" readonly value="${esc(link)}" onclick="this.select()" />
+    <div class="form-actions">
+      <button class="btn primary" id="btn-copy-link">📋 Copy link</button>
+      <a class="btn whatsapp" href="https://wa.me/?text=${waText}" target="_blank">Share on WhatsApp</a>
+    </div>
+    <div class="modal-section">
+      <p class="hint">If the link gets shared too widely, you can replace it — the old link stops
+        working and submissions already received are kept.</p>
+      <button class="btn danger" id="btn-regen-link">Replace link</button>
+    </div>
+  `);
+  document.getElementById('btn-copy-link').onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(registrationLink());
+      toast('Link copied ✓');
+    } catch {
+      document.getElementById('invite-link').select();
+      document.execCommand('copy');
+      toast('Link copied ✓');
+    }
+  };
+  document.getElementById('btn-regen-link').onclick = async () => {
+    if (!confirm('Replace the registration link? The old link will stop working immediately.')) return;
+    const r = await api('/api/register-token/regenerate', { method: 'POST' });
+    settings.register_token = r.register_token;
+    toast('New link created ✓');
+    openInviteModal();
   };
 }
 

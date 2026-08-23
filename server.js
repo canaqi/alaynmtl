@@ -53,6 +53,16 @@ db.exec(`
     key TEXT PRIMARY KEY,
     value TEXT
   );
+  CREATE TABLE IF NOT EXISTS pending_registrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT DEFAULT '',
+    phone TEXT NOT NULL,
+    email TEXT DEFAULT '',
+    box_number TEXT NOT NULL,
+    lock_number TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 // Migration: email column on donors (added after first release)
@@ -85,6 +95,9 @@ function getSetting(k) {
 }
 if (!getSetting('session_secret')) {
   setSettingStmt.run('session_secret', crypto.randomBytes(32).toString('hex'));
+}
+if (!getSetting('register_token')) {
+  setSettingStmt.run('register_token', crypto.randomBytes(8).toString('hex'));
 }
 const SESSION_SECRET = getSetting('session_secret');
 const SESSION_DAYS = 90;
@@ -132,7 +145,23 @@ function tooManyAttempts(ip) {
 const PUBLIC_PATHS = new Set([
   '/login.html', '/style.css', '/logo.svg', '/logo.png',
   '/api/login', '/api/setup', '/api/auth-status',
+  '/register.html', '/api/register', '/api/register-info',
 ]);
+
+function validRegisterToken(query) {
+  const t = String(query.get('t') || '');
+  const real = getSetting('register_token') || '';
+  return t.length > 0 && t.length === real.length &&
+    crypto.timingSafeEqual(Buffer.from(t), Buffer.from(real));
+}
+
+const registerSubmissions = new Map();
+function tooManyRegistrations(ip) {
+  const now = Date.now();
+  const recent = (registerSubmissions.get(ip) || []).filter((ts) => now - ts < 60 * 60000);
+  registerSubmissions.set(ip, recent);
+  return recent.length >= 30;
+}
 
 // ---------- helpers ----------
 const ASSIGNMENT_SELECT = `
@@ -249,6 +278,47 @@ route('GET', '/api/backup', (req, res) => {
   const stream = fs.createReadStream(tmp);
   stream.pipe(res);
   stream.on('close', () => fs.unlink(tmp, () => {}));
+});
+
+// ---------- public self-registration ----------
+route('GET', '/api/register-info', (req, res, m, query) => {
+  json(res, 200, { ok: validRegisterToken(query) });
+});
+
+route('POST', '/api/register', async (req, res, m, query) => {
+  if (!validRegisterToken(query)) {
+    return json(res, 403, { error: 'This link is no longer valid. Please contact the Al Ayn team for a new one.' });
+  }
+  const ip = req.socket.remoteAddress || '';
+  if (tooManyRegistrations(ip)) return badRequest(res, 'Too many submissions — please try again later.');
+  const body = await readBody(req);
+  if (!requireFields(res, body, ['first_name', 'phone', 'box_number', 'lock_number'])) return;
+  db.prepare('INSERT INTO pending_registrations (first_name, last_name, phone, email, box_number, lock_number) VALUES (?, ?, ?, ?, ?, ?)').run(
+    String(body.first_name).trim().slice(0, 200),
+    String(body.last_name || '').trim().slice(0, 200),
+    String(body.phone).trim().slice(0, 50),
+    String(body.email || '').trim().slice(0, 200),
+    String(body.box_number).trim().slice(0, 50),
+    String(body.lock_number).trim().slice(0, 50)
+  );
+  registerSubmissions.get(ip).push(Date.now());
+  json(res, 201, { ok: true });
+});
+
+// ---------- pending registrations (team review) ----------
+route('GET', '/api/pending', (req, res) => {
+  json(res, 200, db.prepare('SELECT * FROM pending_registrations ORDER BY id').all());
+});
+
+route('DELETE', '/api/pending/(\\d+)', (req, res, m) => {
+  db.prepare('DELETE FROM pending_registrations WHERE id = ?').run(Number(m[1]));
+  json(res, 200, { ok: true });
+});
+
+route('POST', '/api/register-token/regenerate', (req, res) => {
+  const token = crypto.randomBytes(8).toString('hex');
+  setSettingStmt.run('register_token', token);
+  json(res, 200, { register_token: token });
 });
 
 route('GET', '/api/dashboard', (req, res) => {

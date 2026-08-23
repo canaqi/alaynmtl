@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sadaqa Box Registration — Al Ayn Foundation</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo.png" />
+  <style>
+    body { background: var(--teal); padding: 18px 12px 40px; }
+    .reg-card {
+      background: #fff; border-radius: 16px; padding: 26px 24px;
+      max-width: 480px; margin: 0 auto;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+    .reg-head { text-align: center; margin-bottom: 6px; }
+    .reg-head img { width: 68px; height: 68px; }
+    .reg-head h1 { font-size: 19px; margin: 6px 0 2px; }
+    .reg-head .ar-title { font-size: 17px; margin: 0 0 2px; }
+    .reg-head p { color: var(--muted); font-size: 13px; margin: 0; }
+    .reg-intro {
+      background: var(--teal-light); border-radius: 10px; padding: 10px 14px;
+      font-size: 13.5px; margin: 14px 0 18px; line-height: 1.5;
+    }
+    .reg-intro .ar { direction: rtl; text-align: right; display: block; margin-top: 6px; }
+    label { display: block; font-size: 13.5px; font-weight: 600; color: var(--muted); margin-bottom: 12px; }
+    label .ar { font-weight: 600; }
+    label input { margin-top: 5px; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn.primary { width: 100%; font-size: 16px; padding: 12px; margin-top: 6px; }
+    .reg-error { color: var(--red); font-size: 13.5px; min-height: 20px; margin-top: 10px; text-align: center; }
+    .success { text-align: center; padding: 30px 10px; }
+    .success .big { font-size: 52px; }
+    .success h2 { margin: 10px 0 6px; }
+    .success p { color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+    .invalid { text-align: center; padding: 30px 10px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="reg-card">
+    <div class="reg-head">
+      <img src="logo.png" onerror="this.onerror=null; this.src='logo.svg'" alt="Al Ayn" />
+      <h1>Sadaqa Box Registration</h1>
+      <p class="ar-title" dir="rtl">تسجيل صندوق الصدقة</p>
+      <p>Al Ayn Social Care Foundation</p>
+    </div>
+
+    <div id="form-view" hidden>
+      <div class="reg-intro">
+        Thank you for taking a Sadaqa box for the orphans! Please fill in your details below.
+        The box and lock numbers are written on your box.
+        <span class="ar">شكراً لأخذكم صندوق الصدقة للأيتام! يرجى تعبئة بياناتكم أدناه. رقم الصندوق ورقم القفل مكتوبان على الصندوق.</span>
+      </div>
+      <form id="form">
+        <label>Name / <span class="ar">الاسم</span> *
+          <input id="r-first" dir="auto" required /></label>
+        <label>Last name / <span class="ar">اسم العائلة</span>
+          <input id="r-last" dir="auto" /></label>
+        <label>Phone (with country code) / <span class="ar">رقم الهاتف مع رمز الدولة</span> *
+          <input id="r-phone" type="tel" placeholder="+964 770 000 0000" required /></label>
+        <label>Email / <span class="ar">البريد الإلكتروني</span>
+          <input id="r-email" type="email" /></label>
+        <div class="two">
+          <label>Box # / <span class="ar">رقم الصندوق</span> *
+            <input id="r-box" required /></label>
+          <label>Lock # / <span class="ar">رقم القفل</span> *
+            <input id="r-lock" required /></label>
+        </div>
+        <button class="btn primary" type="submit" id="r-submit">Send / إرسال</button>
+        <p class="reg-error" id="r-error"></p>
+      </form>
+    </div>
+
+    <div id="success-view" class="success" hidden>
+      <div class="big">🤲</div>
+      <h2>JazakAllah Khair!</h2>
+      <p>Your details were sent to the Al Ayn team.<br />
+        They will confirm your box registration soon.</p>
+      <p dir="rtl">تم إرسال بياناتكم إلى فريق العين.<br />سيتم تأكيد تسجيل صندوقكم قريباً.</p>
+    </div>
+
+    <div id="invalid-view" class="invalid" hidden>
+      <p><strong>This link is no longer valid.</strong><br />
+        Please ask the Al Ayn team for a new registration link.</p>
+      <p dir="rtl">هذا الرابط لم يعد صالحاً. يرجى طلب رابط جديد من فريق العين.</p>
+    </div>
+  </div>
+
+  <script>
+    const token = new URLSearchParams(location.search).get('t') || '';
+    const el = (id) => document.getElementById(id);
+
+    fetch('/api/register-info?t=' + encodeURIComponent(token))
+      .then((r) => r.json())
+      .then((info) => { el(info.ok ? 'form-view' : 'invalid-view').hidden = false; })
+      .catch(() => { el('invalid-view').hidden = false; });
+
+    el('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      el('r-error').textContent = '';
+      el('r-submit').disabled = true;
+      try {
+        const res = await fetch('/api/register?t=' + encodeURIComponent(token), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: el('r-first').value.trim(),
+            last_name: el('r-last').value.trim(),
+            phone: el('r-phone').value.trim(),
+            email: el('r-email').value.trim(),
+            box_number: el('r-box').value.trim(),
+            lock_number: el('r-lock').value.trim(),
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Something went wrong — please try again.');
+        el('form-view').hidden = true;
+        el('success-view').hidden = false;
+        window.scrollTo(0, 0);
+      } catch (err) {
+        el('r-error').textContent = err.message;
+        el('r-submit').disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
