@@ -28,7 +28,17 @@
       padding: 12px 10px 6px; margin: 0 0 18px; text-align: center;
       background: #fbfdfd;
     }
-    .box-guide svg { max-width: 250px; width: 100%; height: auto; }
+    .photo-wrap { position: relative; max-width: 290px; margin: 0 auto; }
+    .photo-wrap img { width: 100%; height: auto; border-radius: 10px; display: block; }
+    .photo-wrap .mark {
+      position: absolute; width: 26px; height: 26px; border-radius: 50%;
+      color: #fff; font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .photo-wrap .m1 { background: var(--teal); }
+    .photo-wrap .m2 { background: #b98d00; }
     .guide-legend { display: flex; flex-direction: column; gap: 6px; text-align: left; font-size: 13px; margin: 8px 4px 6px; }
     .guide-legend .item { display: flex; gap: 8px; align-items: baseline; }
     .guide-legend .dot {
@@ -70,37 +80,18 @@
       </div>
 
       <div class="box-guide">
-        <svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Where to find the box and lock numbers">
-          <!-- lock seal on top -->
-          <rect x="128" y="22" width="34" height="22" rx="5" fill="#eac42a" stroke="#b98d00" stroke-width="2"/>
-          <path d="M136 22v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#b98d00" stroke-width="3"/>
-          <text x="145" y="37" text-anchor="middle" font-size="10" font-weight="bold" fill="#6b5200">L-45</text>
-          <!-- box body -->
-          <rect x="55" y="52" width="150" height="130" rx="10" fill="#1a8ca4"/>
-          <rect x="100" y="44" width="60" height="10" rx="4" fill="#136b7e"/>
-          <rect x="112" y="47" width="36" height="4" rx="2" fill="#0c313c"/>
-          <!-- front label -->
-          <rect x="75" y="105" width="110" height="52" rx="8" fill="#fff"/>
-          <circle cx="93" cy="124" r="10" fill="#eac42a"/>
-          <path d="M89 124a6 6 0 0 1 8-6c-4 3-4 9 0 12a6 6 0 0 1-8-6z" fill="#1a8ca4"/>
-          <text x="110" y="123" font-size="10" fill="#5c7278">Al Ayn</text>
-          <text x="110" y="146" font-size="14" font-weight="bold" fill="#1c2a2e">BOX 123</text>
-          <!-- callout 2: lock -->
-          <line x1="170" y1="33" x2="215" y2="33" stroke="#b98d00" stroke-width="2"/>
-          <circle cx="228" cy="33" r="12" fill="#b98d00"/>
-          <text x="228" y="38" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">2</text>
-          <!-- callout 1: label -->
-          <line x1="185" y1="131" x2="215" y2="131" stroke="#1a8ca4" stroke-width="2"/>
-          <circle cx="228" cy="131" r="12" fill="#1a8ca4"/>
-          <text x="228" y="136" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">1</text>
-        </svg>
+        <div class="photo-wrap">
+          <img src="box-guide.jpg" alt="Back of the Al Ayn Sadaqa box showing where the numbers are" />
+          <span class="mark m1" style="left: 84%; top: 50%;">1</span>
+          <span class="mark m2" style="left: 15%; top: 79%;">2</span>
+        </div>
         <div class="guide-legend">
           <div class="item"><span class="dot d1">1</span>
-            <span><strong>Box #</strong> — printed on the sticker on the front of the box.
-              <span class="ar"><strong>رقم الصندوق</strong> — مطبوع على الملصق في مقدمة الصندوق.</span></span></div>
+            <span><strong>Box #</strong> — on the "Box Number" line of the card on the back (also printed on the box, starts with CA).
+              <span class="ar"><strong>رقم الصندوق</strong> — في سطر "Box Number" على بطاقة خلف الصندوق (ومطبوع أيضاً على الصندوق، يبدأ بـ CA).</span></span></div>
           <div class="item"><span class="dot d2">2</span>
-            <span><strong>Lock #</strong> — written on the small plastic lock/seal on top.
-              <span class="ar"><strong>رقم القفل</strong> — مكتوب على القفل البلاستيكي الصغير في أعلى الصندوق.</span></span></div>
+            <span><strong>Lock #</strong> — on the "Lock Number" line of the card, and printed on the white tag of the cable lock.
+              <span class="ar"><strong>رقم القفل</strong> — في سطر "Lock Number" على البطاقة، ومطبوع على اللصاقة البيضاء لقفل السلك.</span></span></div>
         </div>
       </div>
       <form id="form">
