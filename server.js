@@ -143,7 +143,7 @@ function tooManyAttempts(ip) {
 
 // Requests allowed without a login session
 const PUBLIC_PATHS = new Set([
-  '/login.html', '/style.css', '/logo.svg', '/logo.png',
+  '/login.html', '/style.css', '/logo.svg', '/logo.png', '/box-guide.jpg',
   '/api/login', '/api/setup', '/api/auth-status',
   '/register.html', '/api/register', '/api/register-info',
 ]);
