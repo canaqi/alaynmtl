@@ -241,11 +241,11 @@ function openNewAssignment(prefillDonor) {
   const due = addDaysISO(given, Number(settings.cycle_days || 90));
   openModal('Give out a Sadaqa box', `
     <div class="form-grid">
-      <label>Name (any language)<input id="f-first" dir="auto" value="${esc(prefillDonor?.first_name || '')}" /></label>
-      <label>Last name (optional)<input id="f-last" dir="auto" value="${esc(prefillDonor?.last_name || '')}" /></label>
-      <label class="full">Phone (with country code, e.g. +964…)<input id="f-phone" value="${esc(prefillDonor?.phone || '')}" placeholder="+964 770 000 0000" />
+      <label>Name (any language)<input id="f-first" name="given-name" autocomplete="given-name" dir="auto" value="${esc(prefillDonor?.first_name || '')}" /></label>
+      <label>Last name (optional)<input id="f-last" name="family-name" autocomplete="family-name" dir="auto" value="${esc(prefillDonor?.last_name || '')}" /></label>
+      <label class="full">Phone (with country code, e.g. +964…)<input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" value="${esc(prefillDonor?.phone || '')}" placeholder="+964 770 000 0000" />
         <div id="donor-match"></div></label>
-      <label class="full">Email (optional)<input id="f-email" type="email" value="${esc(prefillDonor?.email || '')}" /></label>
+      <label class="full">Email (optional)<input id="f-email" name="email" autocomplete="email" inputmode="email" type="email" value="${esc(prefillDonor?.email || '')}" /></label>
       <label>Box number<input id="f-box" value="${esc(prefillDonor?.box_number || '')}" /></label>
       <label>Lock number<input id="f-lock" value="${esc(prefillDonor?.lock_number || '')}" /></label>
       <label>Date given<input type="date" id="f-given" value="${given}" /></label>
@@ -424,10 +424,10 @@ async function openEditDonor(id) {
   const { donor } = await api(`/api/donors/${id}`);
   openModal('Edit donor', `
     <div class="form-grid">
-      <label>Name<input id="d-first" dir="auto" value="${esc(donor.first_name)}" /></label>
-      <label>Last name (optional)<input id="d-last" dir="auto" value="${esc(donor.last_name)}" /></label>
-      <label class="full">Phone<input id="d-phone" value="${esc(donor.phone)}" /></label>
-      <label class="full">Email (optional)<input id="d-email" type="email" value="${esc(donor.email || '')}" /></label>
+      <label>Name<input id="d-first" name="given-name" autocomplete="given-name" dir="auto" value="${esc(donor.first_name)}" /></label>
+      <label>Last name (optional)<input id="d-last" name="family-name" autocomplete="family-name" dir="auto" value="${esc(donor.last_name)}" /></label>
+      <label class="full">Phone<input id="d-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" value="${esc(donor.phone)}" /></label>
+      <label class="full">Email (optional)<input id="d-email" name="email" autocomplete="email" inputmode="email" type="email" value="${esc(donor.email || '')}" /></label>
       <label class="full">Notes<input id="d-notes" value="${esc(donor.notes || '')}" /></label>
     </div>
     <div class="form-actions"><button class="btn primary" id="d-save">Save</button></div>

@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="logo.png" />
   <style>
-    body { background: var(--teal); padding: 18px 12px 40px; }
+    html { background: var(--teal); }
+    body { background: var(--teal); padding: 18px 12px 40px; overflow-x: hidden; max-width: 100vw; }
     .reg-card {
       background: #fff; border-radius: 16px; padding: 26px 24px;
       max-width: 480px; margin: 0 auto;
@@ -96,18 +97,18 @@
       </div>
       <form id="form">
         <label>Name / <span class="ar">الاسم</span> *
-          <input id="r-first" dir="auto" required /></label>
+          <input id="r-first" name="given-name" autocomplete="given-name" dir="auto" required /></label>
         <label>Last name / <span class="ar">اسم العائلة</span>
-          <input id="r-last" dir="auto" /></label>
+          <input id="r-last" name="family-name" autocomplete="family-name" dir="auto" /></label>
         <label>Phone (with country code) / <span class="ar">رقم الهاتف مع رمز الدولة</span> *
-          <input id="r-phone" type="tel" placeholder="+964 770 000 0000" required /></label>
+          <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+964 770 000 0000" required /></label>
         <label>Email / <span class="ar">البريد الإلكتروني</span>
-          <input id="r-email" type="email" /></label>
+          <input id="r-email" name="email" type="email" autocomplete="email" inputmode="email" /></label>
         <div class="two">
           <label>Box # / <span class="ar">رقم الصندوق</span> *
-            <input id="r-box" required /></label>
+            <input id="r-box" autocomplete="off" required /></label>
           <label>Lock # / <span class="ar">رقم القفل</span> *
-            <input id="r-lock" required /></label>
+            <input id="r-lock" autocomplete="off" required /></label>
         </div>
         <button class="btn primary" type="submit" id="r-submit">Send / إرسال</button>
         <p class="reg-error" id="r-error"></p>
